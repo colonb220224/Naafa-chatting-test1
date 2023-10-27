@@ -1,6 +1,6 @@
 package com.colonb.websocket.dto;
 
-import com.colonb.websocket.ChatRepository;
+import com.colonb.websocket.service.ChatRepository;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.web.socket.WebSocketSession;

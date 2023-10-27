@@ -1,4 +1,4 @@
-package com.colonb.websocket;
+package com.colonb.websocket.service;
 
 import com.colonb.websocket.dto.ChatRoom;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,4 +1,4 @@
-package com.colonb.websocket;
+package com.colonb.websocket.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

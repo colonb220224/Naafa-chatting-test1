@@ -1,6 +1,6 @@
 package com.colonb.websocket.controller;
 
-import com.colonb.websocket.ChatRepository;
+import com.colonb.websocket.service.ChatRepository;
 import com.colonb.websocket.dto.ChatDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

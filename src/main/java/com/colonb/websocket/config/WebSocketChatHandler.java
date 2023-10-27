@@ -1,7 +1,8 @@
-package com.colonb.websocket;
+package com.colonb.websocket.config;
 
 import com.colonb.websocket.dto.ChatDTO;
 import com.colonb.websocket.dto.ChatRoom;
+import com.colonb.websocket.service.ChatRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
