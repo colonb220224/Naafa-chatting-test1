@@ -18,10 +18,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import java.util.ArrayList;
 
-
 @Slf4j
-@RequiredArgsConstructor
 @Controller
+@RequiredArgsConstructor
 public class ChatController {
 
     // 아래에서 사용되는 convertAndSend 를 사용하기 위해서 서언

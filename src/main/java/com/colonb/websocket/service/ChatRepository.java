@@ -7,7 +7,6 @@ import javax.annotation.PostConstruct;
 import java.util.*;
 
 
-// 추후 DB 와 연결 시 Service 와 Repository(DAO) 로 분리 예정
 @Repository
 @Slf4j
 public class ChatRepository {
