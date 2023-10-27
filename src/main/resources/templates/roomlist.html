@@ -36,10 +36,10 @@
                         <div class="ms-2 me-auto">
                             <div class="fw-bold">
                                 <span class="hidden" th:id="${room.roomName}"></span>
-                                <a th:href="@{/chat/room(roomId=${room.roomId})}">[[${room.roomName}]]</a>
+                                <a th:href="@{/chat/room(roomId=${room.roomId})}" th:text="${room.roomName}"></a>
                             </div>
                         </div>
-                        <span class="badge bg-primary rounded-pill">[[${room.userCount}]]명</span>
+                        <span class="badge bg-primary rounded-pill" th:text="${room.userCount}+'명'"></span>
                     </li>
                 </ul>
             </div>
