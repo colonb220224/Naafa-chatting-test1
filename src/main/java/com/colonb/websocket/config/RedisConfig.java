@@ -1,4 +1,4 @@
-package com.colonb.websocket;
+package com.colonb.websocket.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
