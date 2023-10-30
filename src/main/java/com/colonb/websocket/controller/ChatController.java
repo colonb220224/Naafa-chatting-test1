@@ -26,9 +26,7 @@ public class ChatController {
     // 아래에서 사용되는 convertAndSend 를 사용하기 위해서 서언
     // convertAndSend 는 객체를 인자로 넘겨주면 자동으로 Message 객체로 변환 후 도착지로 전송한다.
     private final SimpMessageSendingOperations template;
-
-    @Autowired
-    ChatRepository repository;
+    private final ChatRepository repository;
 
     // MessageMapping 을 통해 webSocket 로 들어오는 메시지를 발신 처리한다.
     // 이때 클라이언트에서는 /pub/chat/message 로 요청하게 되고 이것을 controller 가 받아서 처리한다.
