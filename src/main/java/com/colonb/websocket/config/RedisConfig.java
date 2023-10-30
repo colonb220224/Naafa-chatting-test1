@@ -1,28 +1,35 @@
 package com.colonb.websocket.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import redis.embedded.RedisServer;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import java.io.IOException;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class RedisConfig {
-    private RedisServer redisServer;
 
-    public RedisConfig(@Value("${spring.redis.port}") int port) throws IOException {
-        this.redisServer = RedisServer.builder().port(port).setting("maxmemory 128M").build();
+    /**
+     * redis pub/sub 메시지를 처리하는 listener 설정
+     */
+    @Bean
+    public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory) {
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(connectionFactory);
+        return container;
     }
 
-    @PostConstruct
-    public void startRedis() {
-        this.redisServer.start();
-    }
-
-    @PreDestroy
-    public void stopRedis() {
-        this.redisServer.stop();
+    /**
+     * 어플리케이션에서 사용할 redisTemplate 설정
+     */
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(connectionFactory);
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
+        return redisTemplate;
     }
 }
