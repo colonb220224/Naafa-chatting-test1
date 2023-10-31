@@ -65,22 +65,6 @@ public class ChatRepository {
         return userUUID;
     }
 
-    // 채팅방 유저 이름 중복 확인
-    public String isDuplicateName(String roomId, String username){
-        ChatRoom room = chatRoomMap.get(roomId);
-        String tmp = username;
-
-        // 만약 userName 이 중복이라면 랜덤한 숫자를 붙임
-        // 이때 랜덤한 숫자를 붙였을 때 getUserlist 안에 있는 닉네임이라면 다시 랜덤한 숫자 붙이기!
-        while(room.getUserlist().containsValue(tmp)){
-            int ranNum = (int) (Math.random()*100)+1;
-
-            tmp = username+ranNum;
-        }
-
-        return tmp;
-    }
-
     // 채팅방 유저 리스트 삭제
     public void delUser(String roomId, String userUUID){
         ChatRoom room = chatRoomMap.get(roomId);

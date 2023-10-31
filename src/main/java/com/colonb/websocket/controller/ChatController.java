@@ -100,15 +100,4 @@ public class ChatController {
         return repository.getUserList(roomId);
     }
 
-    // 채팅에 참여한 유저 닉네임 중복 확인
-    @GetMapping("/chat/duplicateName")
-    @ResponseBody
-    public String isDuplicateName(@RequestParam("roomId") String roomId, @RequestParam("username") String username) {
-
-        // 유저 이름 확인
-        String userName = repository.isDuplicateName(roomId, username);
-        log.info("동작확인 {}", userName);
-
-        return userName;
-    }
 }

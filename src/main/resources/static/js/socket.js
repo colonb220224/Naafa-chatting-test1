@@ -30,9 +30,6 @@ const roomId = url.get('roomId');
 function connect(event) {
     username = document.querySelector('#name').value.trim();
 
-    // username 중복 확인
-    isDuplicateName();
-
     // usernamePage 에 hidden 속성 추가해서 가리고
     // chatPage 를 등장시킴
     usernamePage.classList.add('hidden');
@@ -67,25 +64,6 @@ function onConnected() {
     )
 
     connectingElement.classList.add('hidden');
-
-}
-
-// 유저 닉네임 중복 확인
-function isDuplicateName() {
-
-    $.ajax({
-        type: "GET",
-        url: "/chat/duplicateName",
-        data: {
-            "username": username,
-            "roomId": roomId
-        },
-        success: function (data) {
-            console.log("함수 동작 확인 : " + data);
-
-            username = data;
-        }
-    })
 
 }
 
