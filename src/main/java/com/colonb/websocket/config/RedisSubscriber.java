@@ -1,4 +1,4 @@
-package com.colonb.websocket.pubsub;
+package com.colonb.websocket.config;
 
 import com.colonb.websocket.dto.ChatDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
