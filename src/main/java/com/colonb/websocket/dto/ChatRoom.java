@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +16,9 @@ import java.util.UUID;
 // 따라서 따로 세션 관리를 하는 코드를 작성할 필도 없고,
 // 메시지를 다른 세션의 클라이언트에게 발송하는 것도 구현 필요가 없다!
 @Data
-public class ChatRoom {
+public class ChatRoom implements Serializable {
+
+    private static final long serialVersionUID = 6494678977089006639L;
     private String roomId; // 채팅방 아이디
     private String roomName; // 채팅방 이름
     private long userCount; // 채팅방 인원수
