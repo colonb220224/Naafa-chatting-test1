@@ -1,5 +1,6 @@
 package com.colonb.websocket.service;
 
+import com.colonb.websocket.config.RedisSubscriber;
 import com.colonb.websocket.dto.ChatDTO;
 import com.colonb.websocket.dto.ChatRoom;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Repository;
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -16,6 +18,8 @@ import java.util.*;
 @RequiredArgsConstructor
 @Slf4j
 public class ChatRepository {
+    private final RedisSubscriber redisSubscriber;
+    private final RedisMessageListenerContainer redisMessageListener;
     private static final String CHAT_ROOMS = "CHAT_ROOM";
     private final RedisTemplate<String, ChatDTO> redisTemplate;
     private HashOperations<String, String, ChatRoom> opsHashChatRoom;
@@ -24,6 +28,7 @@ public class ChatRepository {
 
     @PostConstruct
     private void init() {
+        System.out.println("repo init");
         opsHashChatRoom = redisTemplate.opsForHash();
         topics = new HashMap<>();
     }
@@ -47,6 +52,18 @@ public class ChatRepository {
         ChatRoom chatRoom = ChatRoom.create(name);
         opsHashChatRoom.put(CHAT_ROOMS, chatRoom.getRoomId(), chatRoom);
         return chatRoom;
+    }
+
+    /**
+     * 채팅방 입장 : redis에 topic을 만들고 pub/sub 통신을 하기 위해 리스너를 설정한다.
+     */
+    public void enterChatRoom(String roomId) {
+        ChannelTopic topic = topics.get(roomId);
+        if (topic == null) {
+            topic = new ChannelTopic(roomId);
+            redisMessageListener.addMessageListener(redisSubscriber, topic);
+            topics.put(roomId, topic);
+        }
     }
 
     // 채팅방 인원+1
@@ -101,6 +118,6 @@ public class ChatRepository {
         System.out.println("repository getTopic");
         System.out.println("===================");
         System.out.println(roomId);
-        return new ChannelTopic(roomId);
+        return topics.get(roomId);
     }
 }

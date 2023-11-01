@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
+
+import java.nio.channels.Channel;
+import java.security.Principal;
 import java.util.ArrayList;
 
 @Slf4j
@@ -59,9 +62,11 @@ public class ChatController {
         log.info("CHAT {}", chat);
         chat.setMessage(chat.getMessage());
         template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
-        System.out.println("===================");
-        System.out.println("===================");
-        System.out.println("===================");
+        if (ChatDTO.MessageType.ENTER.equals(chat.getType())) {
+            repository.enterChatRoom(chat.getRoomId());
+        }
+//        ChannelTopic ct = repository.getTopic(chat.getRoomId());
+//        System.out.println("채널토픽 : " +ct);
         redisPublisher.publish(repository.getTopic(chat.getRoomId()), chat);
 
     }

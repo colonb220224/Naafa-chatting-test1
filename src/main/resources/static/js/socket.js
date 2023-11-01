@@ -57,7 +57,7 @@ function onConnected() {
     stompClient.send("/pub/chat/enterUser",
         {},
         JSON.stringify({
-            "roomId": roomId,
+            roomId: roomId,
             sender: username,
             type: 'ENTER'
         })
@@ -76,7 +76,7 @@ function getUserList() {
         type: "GET",
         url: "/chat/userlist",
         data: {
-            "roomId": roomId
+            roomId: roomId
         },
         success: function (data) {
             var users = "";
@@ -101,7 +101,7 @@ function sendMessage(event) {
 
     if (messageContent && stompClient) {
         var chatMessage = {
-            "roomId": roomId,
+            roomId: roomId,
             sender: username,
             message: messageInput.value,
             type: 'TALK'
