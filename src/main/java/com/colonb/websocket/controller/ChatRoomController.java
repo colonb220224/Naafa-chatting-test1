@@ -12,8 +12,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @Slf4j
 public class ChatRoomController {
-
-    // ChatRepository Bean 가져오기
     @Autowired
     private ChatRepository chatRepository;
 
