@@ -7,7 +7,7 @@
     <script th:inline="javascript">
 
         function createRoom(){
-            var name = $("#roomName").val();
+            var name = $("#name").val();
 
             if(name === ""){
                 alert("Please write the name.")
@@ -35,17 +35,17 @@
                     <li class="list-group-item d-flex justify-content-between align-items-start">
                         <div class="ms-2 me-auto">
                             <div class="fw-bold">
-                                <span class="hidden" th:id="${room.roomName}"></span>
-                                <a th:href="@{/chat/room(roomId=${room.roomId})}" th:text="${room.roomName}"></a>
+                                <span class="hidden" th:id="${room.name}"></span>
+                                <a th:href="@{/chat/room(roomId=${room.roomId})}" th:text="${room.name}"></a>
                             </div>
                         </div>
-                        <span class="badge bg-primary rounded-pill" th:text="${room.userCount}+'명'"></span>
+<!--                        <span class="badge bg-primary rounded-pill" th:text="${room.userCount}+'명'"></span>-->
                     </li>
                 </ul>
             </div>
         </div>
         <form action="/chat/createroom" method="post" onsubmit="return createRoom()">
-            <input type="text" name="name" class="form-control" id="roomName">
+            <input type="text" name="name" class="form-control" id="name">
             <button class="btn btn-secondary" id="create">개설하기</button>
         </form>
     </th:block>

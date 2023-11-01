@@ -40,16 +40,16 @@ public class ChatController {
     @MessageMapping("/chat/enterUser")
     public void enterUser(@Payload ChatDTO chat, SimpMessageHeaderAccessor headerAccessor) {
 
-        // 채팅방 유저+1
-        repository.plusUserCnt(chat.getRoomId());
+//        // 채팅방 유저+1
+//        repository.plusUserCnt(chat.getRoomId());
+//
+//        // 채팅방에 유저 추가 및 UserUUID 반환
+//        String userUUID = repository.addUser(chat.getRoomId(), chat.getSender());
 
-        // 채팅방에 유저 추가 및 UserUUID 반환
-        String userUUID = repository.addUser(chat.getRoomId(), chat.getSender());
-
-        // 반환 결과를 socket session 에 userUUID 로 저장
-        headerAccessor.getSessionAttributes().put("userUUID", userUUID);
-        headerAccessor.getSessionAttributes().put("roomId", chat.getRoomId());
-
+//        // 반환 결과를 socket session 에 userUUID 로 저장
+//        headerAccessor.getSessionAttributes().put("userUUID", userUUID);
+//        headerAccessor.getSessionAttributes().put("roomId", chat.getRoomId());
+        repository.enterChatRoom(chat.getRoomId());
         chat.setMessage(chat.getSender() + " 님 입장!!");
         template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
 
@@ -61,56 +61,57 @@ public class ChatController {
         System.out.println("sendMessage");
         log.info("CHAT {}", chat);
         chat.setMessage(chat.getMessage());
-        template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
-        if (ChatDTO.MessageType.ENTER.equals(chat.getType())) {
-            repository.enterChatRoom(chat.getRoomId());
-        }
+        System.out.println(chat.getType());
+//        template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
+//        if (ChatDTO.MessageType.ENTER.equals(chat.getType())) {
+//            repository.enterChatRoom(chat.getRoomId());
+//        }
 //        ChannelTopic ct = repository.getTopic(chat.getRoomId());
 //        System.out.println("채널토픽 : " +ct);
         redisPublisher.publish(repository.getTopic(chat.getRoomId()), chat);
 
     }
 
-    // 유저 퇴장 시에는 EventListener 을 통해서 유저 퇴장을 확인
-    @EventListener
-    public void webSocketDisconnectListener(SessionDisconnectEvent event) {
-        log.info("DisConnEvent {}", event);
-
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-
-        // stomp 세션에 있던 uuid 와 roomId 를 확인해서 채팅방 유저 리스트와 room 에서 해당 유저를 삭제
-        String userUUID = (String) headerAccessor.getSessionAttributes().get("userUUID");
-        String roomId = (String) headerAccessor.getSessionAttributes().get("roomId");
-
-        log.info("headAccessor {}", headerAccessor);
-
-        // 채팅방 유저 -1
-        repository.minusUserCnt(roomId);
-
-        // 채팅방 유저 리스트에서 UUID 유저 닉네임 조회 및 리스트에서 유저 삭제
-        String username = repository.getUserName(roomId, userUUID);
-        repository.delUser(roomId, userUUID);
-
-        if (username != null) {
-            log.info("User Disconnected : " + username);
-
-            // builder 어노테이션 활용
-            ChatDTO chat = ChatDTO.builder()
-                    .type(ChatDTO.MessageType.LEAVE)
-                    .sender(username)
-                    .message(username + " 님 퇴장!!")
-                    .build();
-
-            template.convertAndSend("/sub/chat/room/" + roomId, chat);
-        }
-    }
-
-    // 채팅에 참여한 유저 리스트 반환
-    @GetMapping("/chat/userlist")
-    @ResponseBody
-    public ArrayList<String> userList(String roomId) {
-
-        return repository.getUserList(roomId);
-    }
+//    // 유저 퇴장 시에는 EventListener 을 통해서 유저 퇴장을 확인
+//    @EventListener
+//    public void webSocketDisconnectListener(SessionDisconnectEvent event) {
+//        log.info("DisConnEvent {}", event);
+//
+//        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
+//
+//        // stomp 세션에 있던 uuid 와 roomId 를 확인해서 채팅방 유저 리스트와 room 에서 해당 유저를 삭제
+//        String userUUID = (String) headerAccessor.getSessionAttributes().get("userUUID");
+//        String roomId = (String) headerAccessor.getSessionAttributes().get("roomId");
+//
+//        log.info("headAccessor {}", headerAccessor);
+//
+//        // 채팅방 유저 -1
+//        repository.minusUserCnt(roomId);
+//
+//        // 채팅방 유저 리스트에서 UUID 유저 닉네임 조회 및 리스트에서 유저 삭제
+//        String username = repository.getUserName(roomId, userUUID);
+//        repository.delUser(roomId, userUUID);
+//
+//        if (username != null) {
+//            log.info("User Disconnected : " + username);
+//
+//            // builder 어노테이션 활용
+//            ChatDTO chat = ChatDTO.builder()
+//                    .type(ChatDTO.MessageType.LEAVE)
+//                    .sender(username)
+//                    .message(username + " 님 퇴장!!")
+//                    .build();
+//
+//            template.convertAndSend("/sub/chat/room/" + roomId, chat);
+//        }
+//    }
+//
+//    // 채팅에 참여한 유저 리스트 반환
+//    @GetMapping("/chat/userlist")
+//    @ResponseBody
+//    public ArrayList<String> userList(String roomId) {
+//
+//        return repository.getUserList(roomId);
+//    }
 
 }

@@ -32,7 +32,7 @@ public class ChatRoomController {
     public String createRoom(@RequestParam String name, RedirectAttributes rttr) {
         ChatRoom room = chatRepository.createChatRoom(name);
         log.info("CREATE Chat Room {}", room);
-        rttr.addFlashAttribute("roomName", room);
+        rttr.addFlashAttribute("name", room);
         return "redirect:/roomlist";
     }
 
