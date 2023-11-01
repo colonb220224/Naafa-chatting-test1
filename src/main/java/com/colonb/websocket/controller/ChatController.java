@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -54,10 +55,13 @@ public class ChatController {
     // 해당 유저
     @MessageMapping("/chat/sendMessage")
     public void sendMessage(@Payload ChatDTO chat) {
+        System.out.println("sendMessage");
         log.info("CHAT {}", chat);
         chat.setMessage(chat.getMessage());
         template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
-        // Websocket에 발행된 메시지를 redis로 발행한다(publish)
+        System.out.println("===================");
+        System.out.println("===================");
+        System.out.println("===================");
         redisPublisher.publish(repository.getTopic(chat.getRoomId()), chat);
 
     }

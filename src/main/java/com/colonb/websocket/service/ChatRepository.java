@@ -97,6 +97,10 @@ public class ChatRepository {
     }
 
     public ChannelTopic getTopic(String roomId) {
-        return topics.get(roomId);
+        System.out.println("===================");
+        System.out.println("repository getTopic");
+        System.out.println("===================");
+        System.out.println(roomId);
+        return new ChannelTopic(roomId);
     }
 }
