@@ -1,27 +1,37 @@
 package com.colonb.websocket.service;
 
+import com.colonb.websocket.dto.ChatDTO;
 import com.colonb.websocket.dto.ChatRoom;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Repository;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
 
 @Repository
+@RequiredArgsConstructor
 @Slf4j
 public class ChatRepository {
-
-    private Map<String, ChatRoom> chatRoomMap;
+    private static final String CHAT_ROOMS = "CHAT_ROOM";
+    private final RedisTemplate<String, ChatDTO> redisTemplate;
+    private HashOperations<String, String, ChatRoom> opsHashChatRoom;
+    // 채팅방의 대화 메시지를 발행하기 위한 redis topic 정보. 서버별로 채팅방에 매치되는 topic정보를 Map에 넣어 roomId로 찾을수 있도록 한다.
+    private Map<String, ChannelTopic> topics;
 
     @PostConstruct
     private void init() {
-        chatRoomMap = new LinkedHashMap<>();
+        opsHashChatRoom = redisTemplate.opsForHash();
+        topics = new HashMap<>();
     }
 
     // 전체 채팅방 조회
     public List<ChatRoom> findAllRoom(){
         // 채팅방 생성 순서를 최근순으로 반환
-        List chatRooms = new ArrayList<>(chatRoomMap.values());
+        List chatRooms = new ArrayList<>(opsHashChatRoom.values(CHAT_ROOMS));
         Collections.reverse(chatRooms);
 
         return chatRooms;
@@ -29,34 +39,31 @@ public class ChatRepository {
 
     // roomID 기준으로 채팅방 찾기
     public ChatRoom findRoomById(String roomId){
-        return chatRoomMap.get(roomId);
+        return opsHashChatRoom.get(CHAT_ROOMS, roomId);
     }
 
     // roomName 로 채팅방 만들기
-    public ChatRoom createChatRoom(String roomName){
-        ChatRoom chatRoom = new ChatRoom().create(roomName); // 채팅룸 이름으로 채팅 룸 생성 후
-
-        // map 에 채팅룸 아이디와 만들어진 채팅룸을 저장장
-        chatRoomMap.put(chatRoom.getRoomId(), chatRoom);
-
+    public ChatRoom createChatRoom(String name) {
+        ChatRoom chatRoom = ChatRoom.create(name);
+        opsHashChatRoom.put(CHAT_ROOMS, chatRoom.getRoomId(), chatRoom);
         return chatRoom;
     }
 
     // 채팅방 인원+1
     public void plusUserCnt(String roomId){
-        ChatRoom room = chatRoomMap.get(roomId);
+        ChatRoom room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         room.setUserCount(room.getUserCount()+1);
     }
 
     // 채팅방 인원-1
     public void minusUserCnt(String roomId){
-        ChatRoom room = chatRoomMap.get(roomId);
+        ChatRoom room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         room.setUserCount(room.getUserCount()-1);
     }
 
     // 채팅방 유저 리스트에 유저 추가
     public String addUser(String roomId, String userName){
-        ChatRoom room = chatRoomMap.get(roomId);
+        ChatRoom room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         String userUUID = UUID.randomUUID().toString();
 
         // 아이디 중복 확인 후 userList 에 추가
@@ -67,13 +74,13 @@ public class ChatRepository {
 
     // 채팅방 유저 리스트 삭제
     public void delUser(String roomId, String userUUID){
-        ChatRoom room = chatRoomMap.get(roomId);
+        ChatRoom room =opsHashChatRoom.get(CHAT_ROOMS, roomId);
         room.getUserlist().remove(userUUID);
     }
 
     // 채팅방 userName 조회
     public String getUserName(String roomId, String userUUID){
-        ChatRoom room = chatRoomMap.get(roomId);
+        ChatRoom room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         return room.getUserlist().get(userUUID);
     }
 
@@ -81,7 +88,7 @@ public class ChatRepository {
     public ArrayList<String> getUserList(String roomId){
         ArrayList<String> list = new ArrayList<>();
 
-        ChatRoom room = chatRoomMap.get(roomId);
+        ChatRoom room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
 
         // hashmap 을 for 문을 돌린 후
         // value 값만 뽑아내서 list 에 저장 후 reutrn
