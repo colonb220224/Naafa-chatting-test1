@@ -95,4 +95,8 @@ public class ChatRepository {
         room.getUserlist().forEach((key, value) -> list.add(value));
         return list;
     }
+
+    public ChannelTopic getTopic(String roomId) {
+        return topics.get(roomId);
+    }
 }

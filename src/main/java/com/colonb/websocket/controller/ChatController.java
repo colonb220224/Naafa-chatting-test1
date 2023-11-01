@@ -1,5 +1,6 @@
 package com.colonb.websocket.controller;
 
+import com.colonb.websocket.config.RedisPublisher;
 import com.colonb.websocket.dto.ChatDTO;
 import com.colonb.websocket.service.ChatRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class ChatController {
     // convertAndSend 는 객체를 인자로 넘겨주면 자동으로 Message 객체로 변환 후 도착지로 전송한다.
     private final SimpMessageSendingOperations template;
     private final ChatRepository repository;
+    private final RedisPublisher redisPublisher;
 
     // MessageMapping 을 통해 webSocket 로 들어오는 메시지를 발신 처리한다.
     // 이때 클라이언트에서는 /pub/chat/message 로 요청하게 되고 이것을 controller 가 받아서 처리한다.
@@ -55,6 +57,8 @@ public class ChatController {
         log.info("CHAT {}", chat);
         chat.setMessage(chat.getMessage());
         template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
+        // Websocket에 발행된 메시지를 redis로 발행한다(publish)
+        redisPublisher.publish(repository.getTopic(chat.getRoomId()), chat);
 
     }
 
