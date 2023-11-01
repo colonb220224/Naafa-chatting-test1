@@ -13,6 +13,9 @@ public class RedisPublisher {
     private final RedisTemplate<String, ChatDTO> redisTemplate;
 
     public void publish(ChannelTopic topic, ChatDTO message) {
+        System.out.println("redis publish");
+        System.out.println("message : "+message.toString());
+        System.out.println("topic : "+topic.toString());
         redisTemplate.convertAndSend(topic.getTopic(), message);
     }
 
